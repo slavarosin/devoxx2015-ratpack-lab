@@ -11,6 +11,10 @@ public class Lab04 {
   public static void main(String[] args) throws Exception {
     RatpackServer.start(ratpackServerSpec -> ratpackServerSpec
       .registry(Guice.registry(bindingsSpec -> {
+          bindingsSpec
+            .bind(BookRepository.class, DefaultBookRepository.class)
+            .bind(BookService.class, DefaultBookService.class);
+      }
         /*
         * TODO bind DefaultBookService as the implementation of BookService
         * TODO bind DefaultBookRepository as the implementation of BookRepository
@@ -18,8 +22,8 @@ public class Lab04 {
         * Take a look at:
         * `ratpack.guice.BindingsSpec#bind(publicType, implType)`
         */
-      }))
-      .handlers( chain -> chain
+      ))
+      .handlers(chain -> chain
         .prefix("book/:isbn", bookChain -> bookChain
           .all(new InjectionHandler() {
             void handle(Context ctx, BookService bookService) {

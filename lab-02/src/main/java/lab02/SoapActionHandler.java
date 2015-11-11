@@ -15,7 +15,11 @@ public class SoapActionHandler implements Handler {
 
   @Override
   public void handle(Context ctx) throws Exception {
-    // TODO handle soapAction if matches incoming soapAction
-    ctx.next();
+    String soapActionHeader = ctx.getRequest().getHeaders().get("SOAPAction");
+    if (soapActionHeader != null && soapActionHeader.equals(soapAction)) {
+      handler.handle(ctx);
+    } else {
+      ctx.next();
+    }
   }
 }

@@ -18,38 +18,7 @@ public class Lab02 {
           .handlers(chain ->
               chain
                 .all(RequestLogger.ncsa(log))
-                .prefix("user", userChain -> userChain
-                    .path("::f.*", context -> {
-                      PathBinding binding = context.get(PathBinding.class);
-                      String username = binding.getBoundTo().indexOf("/") < 0 ?
-                        binding.getBoundTo() :
-                        binding.getBoundTo().substring(0, binding.getBoundTo().indexOf("/"));
-
-                      log.info("Warning, request for {}", username);
-                      context.next();
-                    })
-                    .prefix(":username", usernameChain ->
-                        usernameChain
-                          .get(context -> {
-                            String username = context.getAllPathTokens().get("username");
-                            context.getResponse().send("user/" + username);
-                          })
-                          .get("tweets", context -> {
-                            String username = context.getAllPathTokens().get("username");
-                            context.getResponse().send("user/" + username + "/tweets");
-                          })
-                          .get("friends", context -> {
-                            String username = context.getAllPathTokens().get("username");
-                            context.getResponse().send("user/" + username + "/friends");
-                          })
-                    )
-                    .all(context -> context
-                        .byMethod(byMethodSpec -> byMethodSpec
-                            .get(() -> context.getResponse().send("user"))
-                            .post(() -> context.getResponse().send("user"))
-                        )
-                    )
-                )
+                .prefix("user", new UserEndpoint())
                 .prefix("api/ws", apiChain -> apiChain
                     .when(ctx -> {
                         Headers headers = ctx.getRequest().getHeaders();

@@ -27,7 +27,7 @@ public class Lab05 {
         .get("api/book/:isbn", ctx -> {
           BookService bookService = ctx.get(BookService.class);
           String isbn = ctx.getPathTokens().get("isbn");
-          ctx.render(bookService.getBook(isbn));
+          ctx.render(bookService.getBook("222" + isbn));
         })
       )
     );
